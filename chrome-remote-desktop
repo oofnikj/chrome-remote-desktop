@@ -105,7 +105,7 @@ SESSION_FILE_PATH = os.path.join(HOME_DIR, ".chrome-remote-desktop-session")
 SYSTEM_SESSION_FILE_PATH = "/etc/chrome-remote-desktop-session"
 
 X_LOCK_FILE_TEMPLATE = "/tmp/.X%d-lock"
-FIRST_X_DISPLAY_NUMBER = 20
+FIRST_X_DISPLAY_NUMBER = 0
 
 # Amount of time to wait between relaunching processes.
 SHORT_BACKOFF_TIME = 5
@@ -418,8 +418,8 @@ class Desktop:
     """Return a candidate display number for which there is currently no
     X Server lock file"""
     display = FIRST_X_DISPLAY_NUMBER
-    while os.path.exists(X_LOCK_FILE_TEMPLATE % display):
-      display += 1
+    # while os.path.exists(X_LOCK_FILE_TEMPLATE % display):
+    #   display += 1
     return display
 
   def _init_child_env(self):
@@ -526,17 +526,17 @@ class Desktop:
     max_width = max([width for width, height in self.sizes])
     max_height = max([height for width, height in self.sizes])
 
-    logging.info("Starting Xvfb on display :%d" % display)
-    screen_option = "%dx%dx24" % (max_width, max_height)
-    self.x_proc = subprocess.Popen(
-        ["Xvfb", ":%d" % display,
-         "-auth", x_auth_file,
-         "-nolisten", "tcp",
-         "-noreset",
-         "-screen", "0", screen_option
-        ] + extra_x_args, env=self._x_env())
-    if not self.x_proc.pid:
-      raise Exception("Could not start Xvfb.")
+    # logging.info("Starting Xvfb on display :%d" % display)
+    # screen_option = "%dx%dx24" % (max_width, max_height)
+    # self.x_proc = subprocess.Popen(
+    #     ["Xvfb", ":%d" % display,
+    #      "-auth", x_auth_file,
+    #      "-nolisten", "tcp",
+    #      "-noreset",
+    #      "-screen", "0", screen_option
+    #     ] + extra_x_args, env=self._x_env())
+    # if not self.x_proc.pid:
+    #   raise Exception("Could not start Xvfb.")
 
     self._wait_for_x()
 
