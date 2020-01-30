@@ -105,7 +105,7 @@ SESSION_FILE_PATH = os.path.join(HOME_DIR, ".chrome-remote-desktop-session")
 SYSTEM_SESSION_FILE_PATH = "/etc/chrome-remote-desktop-session"
 
 X_LOCK_FILE_TEMPLATE = "/tmp/.X%d-lock"
-FIRST_X_DISPLAY_NUMBER = 0
+FIRST_X_DISPLAY_NUMBER = 20
 
 # Amount of time to wait between relaunching processes.
 SHORT_BACKOFF_TIME = 5
@@ -418,8 +418,8 @@ class Desktop:
     """Return a candidate display number for which there is currently no
     X Server lock file"""
     display = FIRST_X_DISPLAY_NUMBER
-    # while os.path.exists(X_LOCK_FILE_TEMPLATE % display):
-    #   display += 1
+    while os.path.exists(X_LOCK_FILE_TEMPLATE % display):
+      display += 1
     return display
 
   def _init_child_env(self):
@@ -526,17 +526,17 @@ class Desktop:
     max_width = max([width for width, height in self.sizes])
     max_height = max([height for width, height in self.sizes])
 
-    # logging.info("Starting Xvfb on display :%d" % display)
-    # screen_option = "%dx%dx24" % (max_width, max_height)
-    # self.x_proc = subprocess.Popen(
-    #     ["Xvfb", ":%d" % display,
-    #      "-auth", x_auth_file,
-    #      "-nolisten", "tcp",
-    #      "-noreset",
-    #      "-screen", "0", screen_option
-    #     ] + extra_x_args, env=self._x_env())
-    # if not self.x_proc.pid:
-    #   raise Exception("Could not start Xvfb.")
+    logging.info("Starting Xvfb on display :%d" % display)
+    screen_option = "%dx%dx24" % (max_width, max_height)
+    self.x_proc = subprocess.Popen(
+        ["Xvfb", ":%d" % display,
+         "-auth", x_auth_file,
+         "-nolisten", "tcp",
+         "-noreset",
+         "-screen", "0", screen_option
+        ] + extra_x_args, env=self._x_env())
+    if not self.x_proc.pid:
+      raise Exception("Could not start Xvfb.")
 
     self._wait_for_x()
 
@@ -548,6 +548,13 @@ class Desktop:
       self.server_supports_exact_resize = True
       self.server_supports_randr = True
       self.randr_add_sizes = True
+  
+  def _mirror_x_session(self, display):
+    logging.info("Connecting to existing X session :%d" % display)
+    self.server_supports_exact_resize = False
+    self.server_supports_randr = True
+    self.child_env["DISPLAY"] = ":%d" % display
+    self._wait_for_x()
 
   def _launch_xorg(self, display, x_auth_file, extra_x_args):
     with tempfile.NamedTemporaryFile(
@@ -697,12 +704,15 @@ class Desktop:
     if not self.session_proc.pid:
       raise Exception("Could not start X session")
 
-  def launch_session(self, x_args):
+  def launch_session(self, x_args, display):
     self._init_child_env()
     self._setup_pulseaudio()
     self._setup_gnubby()
-    self._launch_x_server(x_args)
-    self._launch_x_session()
+    if display == -1:
+      self._launch_x_server(x_args)
+      self._launch_x_session()
+    else:
+      self._mirror_x_session(display)
 
   def launch_host(self, host_config, extra_start_host_args):
     # Start remoting host
@@ -1382,6 +1392,8 @@ Web Store: https://chrome.google.com/remotedesktop"""
   parser.add_argument("--skip-config-upgrade", dest="skip_config_upgrade",
                       default=False, action="store_true",
                       help="Skip running the config upgrade tool.")
+  parser.add_argument("--mirror", dest="display", type=int, default=-1,
+                      help="Mirror existing display session.")
   parser.add_argument(dest="args", nargs="*", help=argparse.SUPPRESS)
   options = parser.parse_args()
 
@@ -1651,7 +1663,7 @@ Web Store: https://chrome.google.com/remotedesktop"""
     else:
       if desktop.x_proc is None and desktop.session_proc is None:
         logging.info("Launching X server and X session.")
-        desktop.launch_session(options.args)
+        desktop.launch_session(options.args, options.display)
         x_server_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
                                           backoff_time)
         session_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
