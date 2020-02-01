@@ -550,7 +550,6 @@ class Desktop:
       self.randr_add_sizes = True
   
   def _mirror_x_session(self, display):
-    logging.info("Connecting to existing X session :%d" % display)
     self.server_supports_exact_resize = False
     self.server_supports_randr = True
     self.child_env["DISPLAY"] = ":%d" % display
@@ -704,15 +703,18 @@ class Desktop:
     if not self.session_proc.pid:
       raise Exception("Could not start X session")
 
-  def launch_session(self, x_args, display):
+  def launch_session(self, x_args):
     self._init_child_env()
     self._setup_pulseaudio()
     self._setup_gnubby()
-    if display == -1:
-      self._launch_x_server(x_args)
-      self._launch_x_session()
-    else:
-      self._mirror_x_session(display)
+    self._launch_x_server(x_args)
+    self._launch_x_session()
+
+  def launch_mirror_session(self, display):
+    self._init_child_env()
+    self._setup_pulseaudio()
+    self._setup_gnubby()
+    self._mirror_x_session(display)
 
   def launch_host(self, host_config, extra_start_host_args):
     # Start remoting host
@@ -1661,9 +1663,12 @@ Web Store: https://chrome.google.com/remotedesktop"""
       # launching things in the wrong order due to differing relaunch times.
       logging.info("Waiting before relaunching")
     else:
-      if desktop.x_proc is None and desktop.session_proc is None:
+      if options.display != -1:
+        logging.info("Connecting to existing X session :%s" % options.display)
+        desktop.launch_mirror_session(options.display)
+      elif desktop.x_proc is None and desktop.session_proc is None:
         logging.info("Launching X server and X session.")
-        desktop.launch_session(options.args, options.display)
+        desktop.launch_session(options.args)
         x_server_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
                                           backoff_time)
         session_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
