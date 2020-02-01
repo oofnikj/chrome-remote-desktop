@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+###                     Chrome Remote Desktop Mirroring                      ###
+# This script launches Chrome Remote Desktop in mirroring mode,                #
+# similar to how CRD works on other platforms. Audio is redirected             #
+# upon client connection. When client disconnects, the audio is                #
+# redirected back to the main sink.                                            #
+#                                                                              #
+# See crd-mirror.service for launching this script as a systemd user service.  #
+###                                                                          ###
+
+
+CRD=/opt/google/chrome-remote-desktop/chrome-remote-desktop
+SUMMARY="Chrome Remote Desktop"
+
+test -n ${DISPLAY} || { echo 'DISPLAY environment variable must be set.'; exit 1; }
+
+start() {
+  ${CRD} --start --mirror ${DISPLAY:1:1}
+}
+
+on_connect() {
+  PULSE_COMMAND=$(grep 'sink_name' ${HOME}/.config/chrome-remote-desktop/pulseaudio*/default.pa)
+  SINK_NAME=$(echo ${PULSE_COMMAND} | sed -E 's/^.*sink_name=(\w+).*$/\1/')
+  pacmd ${PULSE_COMMAND}
+  pacmd set-default-sink ${SINK_NAME}
+}
+
+on_disconnect() {
+  pacmd unload-module module-pipe-sink
+}
+
+_kill() {
+  ${CRD} --stop
+}
+
+main() {
+  trap _kill EXIT
+  while true; do
+    test -e ${LOGFILE} || break
+    LINE=`egrep -m1 "Client (dis)?connected" <(tail -f -n0 ${LOGFILE} --pid ${PID})`
+    MESSAGE=`echo "${LINE}" | sed -E 's/\[.+\] (Client .+: .+)\/.+/\1/'`
+    notify-send "${SUMMARY}" "${MESSAGE}"
+    if [[ ${MESSAGE} =~ " connected" ]] ; then
+      on_connect
+    elif [[ ${MESSAGE} =~ " disconnected" ]] ; then
+      on_disconnect
+    fi
+  done
+}
+
+start
+PID=$(pgrep -f chrome-remote-desktop-host)
+LOGFILE=$(readlink /proc/${PID}/fd/1)
+main
