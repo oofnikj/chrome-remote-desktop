@@ -24,6 +24,8 @@ on_connect() {
   SINK_NAME=$(echo ${PULSE_COMMAND} | sed -E 's/^.*sink_name=(\w+).*$/\1/')
   pacmd ${PULSE_COMMAND}
   pacmd set-default-sink ${SINK_NAME}
+  # for some reason key repeat is disabled when remote session is connected
+  xset r on
 }
 
 on_disconnect() {
