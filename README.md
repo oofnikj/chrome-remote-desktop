@@ -1,4 +1,4 @@
-# Chrome Remote Desktop: Mirror Mode Hack
+# Chrome Remote Desktop: Mirror Mode
 
 This modified version of the Chrome Remote Desktop for Linux [Python wrapper](https://github.com/chromium/chromium/blob/master/remoting/host/linux/linux_me2me_host.py) allows one to launch CRD in mirror mode, making the primary display available over a remote connection instead of launching a new session in a virtual framebuffer.
 
@@ -17,7 +17,8 @@ $ /opt/google/chrome-remote-desktop --start --mirror 0
 The included wrapper script, `crd-mirror`, does a couple of things:
 * launches CRD in mirror mode
 * redirects PulseAudio output to the remote host once connected and restores output to the default after disconnecting
-* triggers a desktop notification when a remote host connection status changes for security (requires `notify-send` to be installed)
+* triggers a desktop notification when a remote host connection status changes (requires `notify-send` to be installed)
+* locks the desktop when remote client disconnects for security
 
 The wrapper script can be placed in the same directoy as `chrome-remote-desktop`.
 
@@ -30,3 +31,5 @@ $ cp crd-mirror.service ~/.config/systemd/user/
 $ systemctl --user enable crd-mirror.service
 $ systemctl --user start crd-mirror.service
 ```
+
+Tested on Arch Linux, GNOME-Xorg. YMMV.
