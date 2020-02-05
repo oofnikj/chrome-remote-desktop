@@ -6,6 +6,8 @@ Original functionality has been preserved -- this is a drop-in replacement and a
 
 ## Usage
 
+It is expected that you already have a working installation of Chrome Remote Desktop.
+
 To use, replace the original script with the included modified version:
 ```
 $ sudo cp chrome-remote-desktop /opt/google/chrome-remote-desktop/
