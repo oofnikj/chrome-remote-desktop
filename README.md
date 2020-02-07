@@ -19,7 +19,7 @@ then launch CRD with the additional option `--mirror DISPLAY`, where `DISPLAY` i
 $ /opt/google/chrome-remote-desktop/chrome-remote-desktop --start --mirror :0
 ```
 
-**NOTE:** On Ubuntu, ou may need to stop the `chrome-remote-desktop` service first:
+**NOTE:** On Ubuntu, you may need to stop the `chrome-remote-desktop` service first:
 ```
 $ sudo service stop chrome-remote-desktop
 ```
