@@ -2,20 +2,9 @@
 
 This modified version of the Chrome Remote Desktop for Linux [Python wrapper](https://github.com/chromium/chromium/blob/master/remoting/host/linux/linux_me2me_host.py) allows one to launch CRD in mirror mode, making the primary display available over a remote connection instead of launching a new session in a virtual framebuffer.
 
-After installing the modified script, launching CRD with the additional option `--mirror DISPLAY`, where `DISPLAY` is the X display to be mirrored (most probably `:0`). will connect to this display instead of launching a new `Xvfb` process, providing much the same functionality as CRD on other platforms
+After installing the modified script, launching CRD with the additional option `--mirror DISPLAY`, where `DISPLAY` is the X display to be mirrored (most probably `:0`), will connect to this display instead of launching a new `Xvfb` process, providing much the same functionality as CRD on other platforms.
 
 Original functionality has been preserved -- this is a drop-in replacement and all existing command-line options work as before.
-
-
-## Installation
-
-It is expected that you already have a working installation of Chrome Remote Desktop.
-
-To install mirror mode, replace the original script with the included modified version:
-```
-$ sudo mv /opt/google/chrome-remote-desktop/chrome-remote-desktop chrome-remote-desktop.orig
-$ sudo cp chrome-remote-desktop /opt/google/chrome-remote-desktop/
-```
 
 The included wrapper script, `crd-mirror`, does a couple of things:
 * launches CRD in mirror mode
@@ -23,34 +12,20 @@ The included wrapper script, `crd-mirror`, does a couple of things:
 * triggers a desktop notification when a remote host connection status changes (requires `notify-send` to be installed)
 * locks the desktop when remote client disconnects for security (requires `xdg-screensaver`)
 
-The wrapper script should be installed in the same directoy as `chrome-remote-desktop`:
-```
-$ sudo cp crd-mirror /opt/google/chrome-remote-desktop/
-```
+## Installation
 
-Install the `systemd` service:
+It is expected that you already have a working installation of Chrome Remote Desktop.
 
+To install mirror mode:
 ```
-$ sudo cp crd-mirror.service /usr/lib/systemd/user/
-$ systemctl --user daemon-reload
-$ systemctl --user enable crd-mirror.service
+$ sudo make install
 ```
-
 
 ## Usage
-**NOTE:** On Ubuntu, you may need to stop (and optionally disable) the `chrome-remote-desktop` service first:
-```
-$ sudo systemctl stop chrome-remote-desktop.service
-$ sudo systemctl disable chrome-remote-desktop.service
-```
 
-Launch (and optionally enable) the `systemd` service in user mode:
+Run `make mirror` as a normal user (not root).
 
-```
-$ systemctl --user start crd-mirror.service
-$ systemctl --user enable crd-mirror.service
-```
-
+---
 
 Tested on Ubuntu 18.04 and Arch Linux running GNOME-Xorg. Most probably will not work with Wayland.
 
