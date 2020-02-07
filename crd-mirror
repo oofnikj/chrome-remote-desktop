@@ -55,5 +55,5 @@ main() {
 
 start
 PID=$(pgrep -f chrome-remote-desktop-host)
-LOGFILE=$(readlink /proc/${PID}/fd/1)
+LOGFILE=/proc/${PID}/fd/1
 main
