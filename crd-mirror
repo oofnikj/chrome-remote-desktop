@@ -26,6 +26,7 @@ on_connect() {
   pacmd ${PULSE_COMMAND}
   pacmd set-default-sink ${SINK_NAME}
   # for some reason key repeat is disabled when remote session is connected
+  sleep 2
   xset r on
 }
 
