@@ -13,10 +13,10 @@ To use, replace the original script with the included modified version:
 $ sudo cp chrome-remote-desktop /opt/google/chrome-remote-desktop/
 ```
 
-then launch CRD with the additional option `--mirror DISPLAY`, where `DISPLAY` is the X display number to be mirrored (most probably `0`). CRD will attempt to connect to this display instead of launching a new `Xvfb` process, providing much the same functionality as CRD on other platforms:
+then launch CRD with the additional option `--mirror DISPLAY`, where `DISPLAY` is the X display to be mirrored (most probably `:0`). CRD will attempt to connect to this display instead of launching a new `Xvfb` process, providing much the same functionality as CRD on other platforms:
 
 ```
-$ /opt/google/chrome-remote-desktop/chrome-remote-desktop --start --mirror 0
+$ /opt/google/chrome-remote-desktop/chrome-remote-desktop --start --mirror :0
 ```
 
 **NOTE:** On Ubuntu, ou may need to stop the `chrome-remote-desktop` service first:

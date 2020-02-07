@@ -552,7 +552,7 @@ class Desktop:
   def _mirror_x_session(self, display):
     self.server_supports_exact_resize = False
     self.server_supports_randr = True
-    self.child_env["DISPLAY"] = ":%d" % display
+    self.child_env["DISPLAY"] = "%s" % display
     self._wait_for_x()
 
   def _launch_xorg(self, display, x_auth_file, extra_x_args):
@@ -1394,7 +1394,7 @@ Web Store: https://chrome.google.com/remotedesktop"""
   parser.add_argument("--skip-config-upgrade", dest="skip_config_upgrade",
                       default=False, action="store_true",
                       help="Skip running the config upgrade tool.")
-  parser.add_argument("--mirror", dest="display", type=int, default=-1,
+  parser.add_argument("--mirror", dest="display",
                       help="Mirror existing display session.")
   parser.add_argument(dest="args", nargs="*", help=argparse.SUPPRESS)
   options = parser.parse_args()
@@ -1663,8 +1663,8 @@ Web Store: https://chrome.google.com/remotedesktop"""
       # launching things in the wrong order due to differing relaunch times.
       logging.info("Waiting before relaunching")
     else:
-      if options.display != -1:
-        logging.info("Connecting to existing X session :%s" % options.display)
+      if options.display:
+        logging.info("Connecting to existing X display %s" % options.display)
         desktop.launch_mirror_session(options.display)
       elif desktop.x_proc is None and desktop.session_proc is None:
         logging.info("Launching X server and X session.")

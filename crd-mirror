@@ -17,7 +17,7 @@ test -n ${DISPLAY} || { echo 'DISPLAY environment variable must be set.'; exit 1
 
 start() {
   ${CRD} --check-running && { echo 'Chrome Remote Desktop is already running'; exit 1; }
-  ${CRD} --start --mirror ${DISPLAY:1:1}
+  ${CRD} --start --mirror ${DISPLAY}
 }
 
 on_connect() {
