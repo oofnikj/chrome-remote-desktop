@@ -9,7 +9,7 @@ install: disable-crd
 				install -b --suffix .orig chrome-remote-desktop ${CRD_DIR}/chrome-remote-desktop
 				install crd-mirror ${CRD_DIR}/crd-mirror
 				install -m644 crd-mirror.service ${SYSTEMD_USER_UNIT_DIR}/crd-mirror.service
-				@echo "To enable service, run 'make mirror'."
+				@echo "To enable service, run 'make mirror' (without sudo)."
 
 disable-crd:
 				@echo "Disabling Chrome Remote Desktop service..."
