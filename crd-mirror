@@ -42,8 +42,8 @@ main() {
   trap _kill EXIT
   while true; do
     test -e ${LOGFILE} || break
-    LINE=`egrep -m1 "Client (dis)?connected" <(tail -f -n0 ${LOGFILE} --pid ${PID})`
-    MESSAGE=`echo "${LINE}" | sed -E 's/\[.+\] (Client .+: .+)\/.+/\1/'`
+    LINE=$(grep -E -m1 "Client (dis)?connected" <(tail -f -n0 ${LOGFILE} --pid ${PID}))
+    MESSAGE=$(echo "${LINE}" | sed -E 's/\[.+\] (Client .+: .+)\/.+/\1/')
     notify-send "${SUMMARY}" "${MESSAGE}"
     if [[ ${MESSAGE} =~ " connected" ]] ; then
       on_connect

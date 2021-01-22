@@ -18,15 +18,15 @@ It is expected that you already have a working installation of Chrome Remote Des
 
 To install mirror mode:
 ```
-$ sudo make install
+$ make install
 ```
 
 ## Usage
 
-Run `make mirror` as a normal user (not root).
+Connect to your host remotely as usual, but instead of launching a new session, you should be greeted by your primary session.
 
 ---
 
-Tested on Ubuntu 18.04 and Arch Linux running GNOME-Xorg. Most probably will not work with Wayland.
+Tested on Ubuntu 18.04 and Arch Linux running GNOME-Xorg. Wayland is currently not supported by Chrome Remote Desktop. There is some discussion [here](https://www.mail-archive.com/wayland-devel@lists.freedesktop.org/msg40731.html).
 
 YMMV.
