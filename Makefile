@@ -13,8 +13,8 @@ install: disable-crd
 
 disable-crd:
 				@echo "Disabling Chrome Remote Desktop service..."
-				systemctl stop chrome-remote-desktop.service || true
-				systemctl disable chrome-remote-desktop.service || true
+				systemctl --user stop chrome-remote-desktop.service || true
+				systemctl --user disable chrome-remote-desktop.service || true
 
 mirror:
 				@test `id -u` -ne 0 || { echo "don't run this as root."; exit 1; }
