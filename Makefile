@@ -1,7 +1,7 @@
 .PHONY: install disable-crd mirror
 
 CRD_DIR=/opt/google/chrome-remote-desktop
-SYSTEMD_USER_UNIT_DIR=/etc/systemd/user
+SYSTEMD_USER_UNIT_DIR=/usr/lib/systemd/user
 
 
 install: disable-crd
