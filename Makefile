@@ -24,6 +24,7 @@ disable-crd:
 	sudo systemctl stop chrome-remote-desktop.service || true
 	sudo systemctl disable chrome-remote-desktop.service || true
 	sudo systemctl stop chrome-remote-desktop@${USER}.service || true
+	sudo systemctl disable chrome-remote-desktop@${USER}.service || true
 
 uninstall:
 	@test `id -u` -ne 0 || { echo "This step SHOULD NOT be run as root."; exit 1; }
